@@ -12,7 +12,6 @@
   <img alt="Neo4j" src="https://img.shields.io/badge/Neo4j-4581C3?logo=neo4j&logoColor=white">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-black">
-  <img alt="CI" src="https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white">
 </p>
 
 **ORCA** stands for **Objective Relational Contextual Archive**. It is a local-first memory service for agentic coding systems and LLM applications. ORCA gives agents one durable memory contract: **recall before work, inject relevant context, ingest outcomes, compact sessions, and preserve useful knowledge across tools, prompts, sessions, projects, and teams**.
@@ -34,8 +33,8 @@ Under the hood, ORCA layers Redis for working memory, Weaviate for semantic reca
 
 | Goal | Recommended path |
 |------|------------------|
-| Run ORCA locally for development | `pnpm install`, configure `.env`, then start Compose plus the API/worker |
-| Smoke test the full app stack | `docker compose --profile app up -d --build` |
+| Run ORCA locally | `pnpm install`, configure `.env`, then start Compose plus the API/worker |
+| Run the full app stack | `docker compose --profile app up -d --build` |
 | Add ORCA to an agent harness | `pnpm orca:cli -- install universal --enforce --destination ./orca-agent-install` |
 | Force memory on every model call | Run `pnpm orca:proxy` and set `OPENAI_BASE_URL=http://127.0.0.1:4030` |
 | Add explicit memory tools | Install the generated `<target>.mcp.json` in any MCP-capable harness |
@@ -59,12 +58,10 @@ Under the hood, ORCA layers Redis for working memory, Weaviate for semantic reca
 - [Ports](#ports-reference)
 - [Onboarding tooling](#onboarding-tooling)
 - [Build, package, deploy](#build-package-deploy)
-- [Operational validation](#operational-validation)
 - [Monitoring](#monitoring)
 - [Backup / restore summary](#backup--restore-summary)
 - [Security & hardening](#security--hardening)
 - [Known limitations](#known-limitations)
-- [Release maturity](#release-maturity)
 - [Repository layout](#repository-layout)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -81,8 +78,8 @@ The runtime is intentionally **two services**: `memory-api` (online ingest/recal
 
 ORCA is aimed at engineers who need:
 
-- **Local-first development** — run the stack on one machine with Docker Compose plus two Node processes.
-- **Integration testing** — hit stable HTTP endpoints while swapping embeddings and models behind the control plane.
+- **Local-first operation** — run the stack on one machine with Docker Compose plus two Node processes.
+- **Stable integration surfaces** — call stable HTTP endpoints while swapping embeddings and models behind the control plane.
 - **Reference deployments** — use container images and Kubernetes manifests as templates, then harden them for your environment.
 
 It is **not** a turnkey multi-tenant SaaS. Plan to supply identity, tenancy, quotas, backups, and production-grade infra around the manifests this repo publishes.
@@ -93,11 +90,11 @@ It is **not** a turnkey multi-tenant SaaS. Plan to supply identity, tenancy, quo
 |--------|-------------------------|
 | HTTP Memory API (`/v1/memories/*`, metrics, workflows view) | A hosted SaaS UI or multitenant billing |
 | Hybrid retrieval orchestration across Redis / Weaviate / Neo4j | Hosted MCP gateway or managed adapter distribution |
-| Feedback-driven salience and adaptive compaction | A fully scripted production CD path tested on every fork |
+| Feedback-driven salience and adaptive compaction | A hosted control plane or managed upgrades |
 | Docker Compose stacks, GHCR images, K8s reference manifests | Stateful services auto-provisioned in every `kubectl apply` snippet |
 | Grafana / Prometheus configs and alerting examples | Opinionated SOC2-style compliance toolkit |
 
-See [release maturity](#release-maturity) for where this realistically fits in your rollout.
+See [Build, package, deploy](#build-package-deploy) for deployment options.
 
 ---
 
@@ -105,10 +102,10 @@ See [release maturity](#release-maturity) for where this realistically fits in y
 
 Requirements: **Node.js 22+**, **pnpm**, **Docker Desktop** (or Compose-compatible engine).
 
-### Option A — Fully containerized app stack (recommended for product smoke)
+### Option A — Fully containerized app stack
 
 This path keeps the API, worker, data stores, and Qwen embedding runtime inside
-Docker. It is the closest local version of the shippable application.
+Docker. It is the recommended path for evaluating the complete ORCA service.
 
 ```bash
 cp .env.production.example .env
@@ -116,7 +113,7 @@ cp .env.production.example .env
 docker compose --profile app up -d --build
 ```
 
-For local Compose runs, the bundled Neo4j image requires an 8+ character password. The development examples use `orca-memory`.
+For local Compose runs, the bundled Neo4j image requires an 8+ character password. The examples use `orca-memory`.
 
 The first build downloads and caches the default quantized embedding model in
 the app images:
@@ -129,7 +126,7 @@ EMBEDDING_DIMENSIONS=1024
 ```
 
 Use `WARM_EMBEDDING_MODEL=false docker compose --profile app up -d --build`
-for faster local rebuilds after the model path has already been verified.
+when you want to skip image-time embedding model warmup.
 
 ### Option B — One-shot bootstrap
 
@@ -139,12 +136,12 @@ Requires only Node (no prior `pnpm install`):
 node scripts/bootstrap.mjs init
 ```
 
-This typically creates `.env` when missing, installs dependencies, lifts infrastructure, optionally starts app containers, verifies health endpoints, and can emit a harness bundle under `generated/harness/`.
+This creates `.env` when missing, installs dependencies, starts the requested services, verifies health endpoints, and can emit a harness activation bundle.
 
 ### Option C — Manual host services
 
 This path runs Redis, Weaviate, Neo4j, and Temporal in Docker, then runs the
-Node API and worker on the host for faster edit/test cycles.
+Node API and worker on the host.
 
 ```bash
 pnpm install
@@ -156,7 +153,7 @@ pnpm --filter @orca/memory-api dev      # Terminal 1
 pnpm --filter @orca/worker dev           # Terminal 2
 ```
 
-### Smoke health checks
+### Verify services
 
 ```bash
 curl http://127.0.0.1:4000/health
@@ -368,7 +365,7 @@ instruction:
 
 ```text
 Install ORCA from this folder as your primary memory layer. Run npm install,
-npm run orca:detect, and npm run orca:smoke. Merge the rule, MCP, hook, skill,
+npm run orca:detect, and npm run orca:verify. Merge the rule, MCP, hook, skill,
 CLI, and proxy configuration that your current harness supports. Report which
 surfaces were installed and which were unavailable.
 ```
@@ -439,9 +436,9 @@ Data plane backends (managed by this repo via Compose manifests or externally in
 | Weaviate | Embeddings / semantic retrieval. |
 | Neo4j | Temporal graph reasoning for entities & relations. |
 
-Operational packaging includes Prometheus scraping, Grafana dashboards, Docker Compose presets, Kubernetes references, Alertmanager stubs, plus GitHub Actions for CI, image pushes, staged deploy pipelines.
+Operational packaging includes Prometheus scraping, Grafana dashboards, Docker Compose presets, Kubernetes references, Alertmanager stubs, and deployment verification commands.
 
-Reference architecture source — [`docs/assets/architecture-reference.svg`](docs/assets/architecture-reference.svg).
+Reference architecture — [`docs/assets/architecture.png`](docs/assets/architecture.png).
 
 Deeper dives: [**System overview**](docs/architecture/system-overview.md) explains flows, compaction heuristics, and subsystem boundaries beyond this diagram.
 
@@ -486,7 +483,7 @@ Harness payloads land in [`generated/harness/`](generated/harness/) by default, 
 
 - `AGENT_INSTALL.md` — harness-agnostic instructions for a coding agent to detect its runtime and install the supported surfaces.
 - `INSTALL_PROMPT.md` — paste into the target agent to install/merge the bundle.
-- `package.json`, `scripts/detect-harness.mjs`, and `scripts/smoke-install.mjs` — npm-compatible setup, harness detection, and bundle smoke checks.
+- `package.json`, `scripts/detect-harness.mjs`, and `scripts/verify-install.mjs` — npm-compatible setup, harness detection, and bundle verification.
 - `RULE.md` — primary-memory rule text for AGENTS.md, CLAUDE.md, cursor rules, opencode rules, or project rule.md.
 - `lifecycle-contract.json`, `hooks.abstract.json`, and `hooks/orca-hook.mjs` — harness-neutral lifecycle wiring for session start, pre-prompt, pre-tool, post-tool, post-response, and session-end style events where supported.
 - `ADAPTER_NOTES.md` — target-specific guidance for Codex, Claude Code, Cursor, Gemini CLI, OpenCode, Antigravity, Pi, Factory Droid, or unknown/custom harnesses.
@@ -538,10 +535,8 @@ EMBEDDING_DTYPE=q8
 EMBEDDING_DIMENSIONS=1024
 ```
 
-Set `WARM_EMBEDDING_MODEL=false` for faster local image rebuilds, or set
-`EMBEDDING_PROVIDER=hash` for deterministic offline smoke tests.
-
-CI publishes immutable tags via [`.github/workflows/release-images.yml`](.github/workflows/release-images.yml).
+Set `WARM_EMBEDDING_MODEL=false` for faster local image builds, or set
+`EMBEDDING_PROVIDER=hash` for deterministic offline evaluation.
 
 ### Simple VPS deployment
 
@@ -550,7 +545,7 @@ CI publishes immutable tags via [`.github/workflows/release-images.yml`](.github
 3. Run `docker compose --profile app up -d`.
 4. Put the Memory API and/or proxy behind TLS.
 5. Keep Redis, Weaviate, Neo4j, Temporal, and Postgres ports private.
-6. Run `pnpm orca:smoke` and `pnpm orca:load -- --requests 60 --concurrency 6` against the deployed endpoints.
+6. Run `pnpm orca:verify` and `pnpm orca:load -- --requests 60 --concurrency 6` against the deployed endpoints.
 
 ### Kubernetes
 
@@ -569,56 +564,6 @@ kubectl apply -f deploy/k8s/worker-deployment.yaml
 **Stacked demo** (`deploy/k8s/platform`) folds in Compose-adjacent data dependencies for evaluation clusters—still **reference-grade**, not a compliance-ready production bundle.
 
 Staging / production rollout guidance: [**Production readiness playbook**](docs/deployment/production-readiness.md), [**Backup & restore**](docs/deployment/backup-and-restore.md), **[Distributed deployment considerations](docs/deployment/distributed-open-source-deployment.md)**.
-
-GitHub workflows for reference environments: **[`deploy-reference.yml`](.github/workflows/deploy-reference.yml)**, **[`promote-release.yml`](.github/workflows/promote-release.yml)** — enable environment protection gates on GitHub Environment names before trusting automated promotion logic.
-
----
-
-## Operational validation
-
-```bash
-pnpm orca:preflight -- --env-file .env.production.example
-pnpm orca:smoke
-pnpm orca:load -- --requests 60 --concurrency 6
-pnpm orca:sandbox-smoke
-```
-
-These wrap [`scripts/production-readiness.mjs`](scripts/production-readiness.mjs)—pair them with staged smoke tests hitting every dependency tier. The smoke script defaults to a longer timeout for cold local Transformers/Qwen initialization; override with `ORCA_SMOKE_TIMEOUT_MS` or `--timeout-ms`.
-
-`pnpm orca:sandbox-smoke` runs an isolated local smoke without Docker:
-temporary data directory, random localhost ports, hash embeddings, local workflow
-execution, and a mock OpenAI-compatible upstream for proxy verification.
-
-For a containerized smoke that keeps app state in disposable Docker volumes, use
-a throwaway Compose project name:
-
-```bash
-docker compose -p orca-smoke --profile app down -v --remove-orphans
-
-ORCA_API_KEY=smoke-docker-key \
-ORCA_AUTH_MODE=api-key \
-APP_NEO4J_PASSWORD=orca-memory \
-EMBEDDING_PROVIDER=hash \
-EMBEDDING_DIMENSIONS=32 \
-WARM_EMBEDDING_MODEL=false \
-TEMPORAL_EXECUTION_MODE=local \
-docker compose -p orca-smoke --profile app up -d --build
-
-ORCA_API_KEY=smoke-docker-key \
-node scripts/production-readiness.mjs smoke \
-  --base-url http://127.0.0.1:4000 \
-  --worker-url http://127.0.0.1:4010 \
-  --scope project:docker-orca-smoke
-
-ORCA_API_KEY=smoke-docker-key \
-node scripts/production-readiness.mjs load \
-  --base-url http://127.0.0.1:4000 \
-  --scope workspace \
-  --requests 60 \
-  --concurrency 6
-
-docker compose -p orca-smoke --profile app down -v --remove-orphans
-```
 
 ---
 
@@ -668,18 +613,6 @@ Responsible disclosure guidelines live in **`SECURITY.md`**.
 
 ---
 
-## Release maturity
-
-| Stage | Suitability |
-|-------|--------------|
-| **Local / OSS evaluation** | **Ready** — Compose + docs + onboarding UI keep spin-up repeatable. CI enforces lint/build/typecheck/tests. GHCR publishes tags. |
-| **Staging clusters** | **Partial** — You must bolt on managed infra, ingress, rotated secrets, and smoke automation. Harness integration now supports enforced middleware, an OpenAI-compatible proxy, and the MCP bridge. |
-| **Highly regulated enterprise production** | **Not endorsed yet** — You still need hardened dependency bundles, audited authorization semantics, repeatable CD plus rollback rehearsal, and field-tested ops runbooks. Finish those externally before staking production SLAs on this distribution. |
-
-Use this framing in internal reviews and stakeholder updates so expectations stay grounded.
-
----
-
 ## Repository layout
 
 | Path | Role |
@@ -690,7 +623,7 @@ Use this framing in internal reviews and stakeholder updates so expectations sta
 | `packages/harness` | Enforced memory middleware for agent runtimes and proxy integrations |
 | `packages/config`, `packages/schemas`, `packages/auth`, `packages/onboarding` | Contracts + utilities |
 | `infra/docker`, `deploy/k8s` | Runtime wiring & cluster templates |
-| `docs/` | Narrative docs, roadmap, alignment notes |
+| `docs/` | Architecture, setup, integration, and deployment documentation |
 | `scripts/` | Bootstrap + operational CLIs |
 
 ---
@@ -704,8 +637,6 @@ Use this framing in internal reviews and stakeholder updates so expectations sta
 - [**Production readiness checklist**](docs/deployment/production-readiness.md)
 - [**Distributed deployment nuances**](docs/deployment/distributed-open-source-deployment.md)
 - [**Kubernetes reference README**](deploy/k8s/README.md)
-- [**Source alignment stance**](docs/reference/source-alignment.md)
-- [**MVP roadmap**](docs/roadmap/mvp-roadmap.md)
 - [**ADR 001 · Control-plane boundaries**](docs/adr/001-control-plane-boundaries.md)
 
 Optional advanced topic — **Python Graphiti bridge**:

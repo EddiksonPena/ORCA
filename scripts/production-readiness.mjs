@@ -208,11 +208,11 @@ const readResponseJson = async (response) => {
 };
 
 const requestTimeoutMs = () => {
-  const parsed = Number(option("timeout-ms", process.env.ORCA_SMOKE_TIMEOUT_MS ?? "120000"));
+  const parsed = Number(option("timeout-ms", process.env.ORCA_VERIFY_TIMEOUT_MS ?? "120000"));
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 120000;
 };
 
-const smoke = async () => {
+const verify = async () => {
   const baseUrl = option("base-url", process.env.ORCA_BASE_URL ?? "http://127.0.0.1:4000");
   const workerUrl = option("worker-url", process.env.ORCA_WORKER_URL ?? "http://127.0.0.1:4010");
   const apiKey = option("api-key", process.env.ORCA_API_KEY ?? "");
@@ -220,7 +220,7 @@ const smoke = async () => {
   const scope = option("scope", "project:production-readiness");
   const timeoutMs = requestTimeoutMs();
   const now = new Date().toISOString();
-  const unique = `orca-production-smoke-${Date.now()}`;
+  const unique = `orca-production-verify-${Date.now()}`;
   const checks = [];
 
   const authHeaders = addHeaderAuth({ "content-type": "application/json" }, apiKey, bearerToken);
@@ -232,7 +232,7 @@ const smoke = async () => {
   checks.push(...healthChecks);
 
   if (!apiKey && !bearerToken) {
-    addCheck(checks, "auth-credentials", false, "Provide ORCA_API_KEY or ORCA_BEARER_TOKEN for authenticated smoke tests.");
+    addCheck(checks, "auth-credentials", false, "Provide ORCA_API_KEY or ORCA_BEARER_TOKEN for authenticated verification.");
     print({ baseUrl, workerUrl, ok: false, checks });
     process.exit(1);
   }
@@ -242,9 +242,9 @@ const smoke = async () => {
     headers: authHeaders,
     body: JSON.stringify({
       scope,
-      source: "production-readiness-smoke",
-      tags: ["smoke", "production"],
-      content: `Production readiness smoke memory ${unique} at ${now}.`,
+      source: "production-readiness-verify",
+      tags: ["verification", "production"],
+      content: `Production readiness verification memory ${unique} at ${now}.`,
     }),
     signal: AbortSignal.timeout(timeoutMs),
   });
@@ -271,8 +271,8 @@ const smoke = async () => {
     ok: recallResponse.ok && recallMatches,
     details: recallResponse.ok
       ? recallMatches
-        ? "Recall returned the injected smoke memory."
-        : "Recall request succeeded, but the injected smoke memory was not found in the response."
+        ? "Recall returned the injected verification memory."
+        : "Recall request succeeded, but the injected verification memory was not found in the response."
       : `POST /v1/memories/recall -> HTTP ${recallResponse.status}`,
   });
 
@@ -447,10 +447,10 @@ if (command === "help" || command === "--help" || command === "-h") {
     "Orca production readiness commands",
     "",
     "node scripts/production-readiness.mjs preflight [--env-file .env.production.example]",
-    "node scripts/production-readiness.mjs smoke [--base-url http://127.0.0.1:4000] [--worker-url http://127.0.0.1:4010]",
+    "node scripts/production-readiness.mjs verify [--base-url http://127.0.0.1:4000] [--worker-url http://127.0.0.1:4010]",
     "node scripts/production-readiness.mjs load [--base-url http://127.0.0.1:4000] [--requests 40] [--concurrency 4]",
     "",
-    "Auth for smoke/load can be provided with:",
+    "Auth for verify/load can be provided with:",
     "  ORCA_API_KEY=...",
     "  ORCA_BEARER_TOKEN=...",
   ].join("\n"));
@@ -461,8 +461,8 @@ if (command === "preflight") {
   await preflight();
 }
 
-if (command === "smoke") {
-  await smoke();
+if (command === "verify") {
+  await verify();
 }
 
 if (command === "load") {

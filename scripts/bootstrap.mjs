@@ -294,7 +294,7 @@ if (command === "help" || command === "--help" || command === "-h") {
     "node scripts/bootstrap.mjs ui",
     "node scripts/bootstrap.mjs down",
     "node scripts/production-readiness.mjs preflight",
-    "node scripts/production-readiness.mjs smoke",
+    "node scripts/production-readiness.mjs verify",
     "node scripts/production-readiness.mjs load",
   ].join("\n"));
   process.exit(0);

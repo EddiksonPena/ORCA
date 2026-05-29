@@ -14,7 +14,7 @@ It is meant to sit on top of:
 The production readiness commands added in this repo cover three layers:
 
 - preflight config validation
-- live deployment smoke validation
+- live deployment verification
 - basic authenticated recall load validation
 
 These checks do not replace cluster-specific load testing, chaos testing, or real restore drills, but they close the biggest “did we configure and wire this correctly?” gap before rollout.
@@ -42,7 +42,7 @@ What it checks:
 - API key settings are present when `api-key` or `hybrid` auth is used
 - JWT issuer, audience, and JWKS reachability are checked when `jwt` or `hybrid` auth is used
 
-## 2. Smoke Test A Live Deployment
+## 2. Verify A Live Deployment
 
 Run against a running environment after deploy:
 
@@ -50,7 +50,7 @@ Run against a running environment after deploy:
 ORCA_BASE_URL=https://orca-api.example.com \
 ORCA_WORKER_URL=https://orca-worker.example.com \
 ORCA_API_KEY=replace-with-real-key \
-pnpm orca:smoke
+pnpm orca:verify
 ```
 
 Or with bearer auth:
@@ -59,7 +59,7 @@ Or with bearer auth:
 ORCA_BASE_URL=https://orca-api.example.com \
 ORCA_WORKER_URL=https://orca-worker.example.com \
 ORCA_BEARER_TOKEN=replace-with-real-token \
-pnpm orca:smoke
+pnpm orca:verify
 ```
 
 What it verifies:
@@ -67,16 +67,16 @@ What it verifies:
 - API and worker `/health`
 - public `/metrics`
 - authenticated ingest
-- authenticated recall of the injected smoke memory
+- authenticated recall of the injected verification memory
 - app module metrics endpoint
 - worker workflow definitions
 - worker workflow runs
 
-The Kubernetes deploy workflow now uses this same smoke script after rollout.
+Use the same verification command after each rollout.
 
 ## 3. Run A Basic Recall Load Check
 
-After smoke passes, run a small authenticated load burst:
+After verification passes, run a small authenticated load burst:
 
 ```bash
 ORCA_BASE_URL=https://orca-api.example.com \
@@ -84,17 +84,17 @@ ORCA_API_KEY=replace-with-real-key \
 pnpm orca:load -- --requests 60 --concurrency 6
 ```
 
-This is not a substitute for formal performance testing, but it gives you a lightweight regression signal for:
+This is not a substitute for formal performance testing, but it gives you a lightweight release signal for:
 
 - outright request failures
 - elevated tail latency
-- auth regressions under concurrent request pressure
+- auth behavior under concurrent request pressure
 
 ## 4. Recommended Promotion Sequence
 
 1. Publish a versioned image tag.
 2. Run `promote-release` to deploy the same tag to staging.
-3. Run `pnpm orca:smoke` against staging.
+3. Run `pnpm orca:verify` against staging.
 4. Run `pnpm orca:load` against staging.
 5. Verify alert routing and dashboards.
 6. Confirm backup freshness and restore readiness.

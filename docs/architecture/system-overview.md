@@ -197,9 +197,9 @@ Retrieval is intentionally hybrid:
 
 This is the main differentiator from standard vector-only RAG systems.
 
-## MVP Boundary
+## Implementation Boundary
 
-The MVP should prove:
+The core distribution is responsible for:
 
 - cross-store ingestion
 - hybrid recall
@@ -207,7 +207,7 @@ The MVP should prove:
 - background maintenance workflows
 - provenance-aware response packaging
 
-It should defer:
+The following concerns remain deployment-specific:
 
 - complex governance policies
 - learned long-term compression
