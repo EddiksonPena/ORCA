@@ -28,3 +28,20 @@ test("embedding config can fall back to deterministic hash vectors", () => {
   assert.equal(config.embeddingDtype, "fp32");
   assert.equal(config.embeddingDimensions, 16);
 });
+
+test("embedding config supports Ollama endpoints", () => {
+  const config = loadConfig({
+    PWD: process.cwd(),
+    EMBEDDING_PROVIDER: "ollama",
+    EMBEDDING_MODEL: "qwen3-embedding:4b",
+    EMBEDDING_DIMENSIONS: "2560",
+    OLLAMA_HOST: "https://ollama.com/",
+    OLLAMA_API_KEY: "ollama-test-key",
+  });
+
+  assert.equal(config.embeddingProvider, "ollama");
+  assert.equal(config.embeddingModel, "qwen3-embedding:4b");
+  assert.equal(config.embeddingDimensions, 2560);
+  assert.equal(config.ollamaHost, "https://ollama.com");
+  assert.equal(config.ollamaApiKey, "ollama-test-key");
+});

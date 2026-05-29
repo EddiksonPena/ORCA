@@ -54,7 +54,7 @@ flowchart TD
 - Put `memory-api` and `proxy` behind TLS.
 - Keep Redis, Weaviate, Neo4j, Temporal, and PostgreSQL on private networks.
 - Set `ORCA_AUTH_MODE=api-key`, `jwt`, or `hybrid`; do not expose `ORCA_AUTH_MODE=none`.
-- Store `ORCA_API_KEY`, provider keys, and database credentials in a secret manager.
+- Store `ORCA_API_KEY`, `OLLAMA_API_KEY` when using Ollama Cloud, upstream model provider keys, and database credentials in a secret manager.
 - Use persistent volumes or managed services for Redis, Weaviate, Neo4j, and PostgreSQL.
 - Configure backups before relying on ORCA for durable memory.
 - Scrape `/metrics` from `memory-api`, `worker`, and `proxy`.

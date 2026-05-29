@@ -11,8 +11,8 @@ const cacheDir = resolve(
   process.env.EMBEDDING_CACHE_DIR ?? "./data/models/transformers",
 );
 
-if (provider === "hash") {
-  process.stdout.write("Embedding provider is hash; skipping model warmup.\n");
+if (provider !== "transformers") {
+  process.stdout.write(`Embedding provider is ${provider}; skipping Transformers model warmup.\n`);
   process.exit(0);
 }
 

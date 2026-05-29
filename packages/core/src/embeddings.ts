@@ -64,11 +64,56 @@ const toVector = (output: unknown): number[] => {
   throw new Error("Transformers embedding output did not contain vector data.");
 };
 
+const toOllamaVector = (payload: unknown): number[] => {
+  const response = payload as {
+    embedding?: unknown;
+    embeddings?: unknown;
+  };
+
+  if (Array.isArray(response.embeddings) && Array.isArray(response.embeddings[0])) {
+    return (response.embeddings[0] as unknown[]).map(Number);
+  }
+
+  if (Array.isArray(response.embedding)) {
+    return response.embedding.map(Number);
+  }
+
+  throw new Error("Ollama embedding response did not contain vector data.");
+};
+
+const createOllamaEmbeddingService = (config: AppConfig): EmbeddingService => ({
+  embed: async (content, purpose) => {
+    const response = await fetch(`${config.ollamaHost}/api/embed`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        ...(config.ollamaApiKey ? { authorization: `Bearer ${config.ollamaApiKey}` } : {}),
+      },
+      body: JSON.stringify({
+        model: config.embeddingModel,
+        input: formatInput(content, purpose, config),
+      }),
+    });
+
+    const text = await response.text();
+    const payload = text ? JSON.parse(text) : {};
+    if (!response.ok) {
+      throw new Error(`Ollama embedding request failed with HTTP ${response.status}: ${text}`);
+    }
+
+    return toOllamaVector(payload);
+  },
+});
+
 export const createEmbeddingService = (config: AppConfig): EmbeddingService => {
   if (config.embeddingProvider === "hash") {
     return {
       embed: async (content) => hashEmbed(content, config.embeddingDimensions),
     };
+  }
+
+  if (config.embeddingProvider === "ollama") {
+    return createOllamaEmbeddingService(config);
   }
 
   let extractorPromise: Promise<(input: string[], options: Record<string, unknown>) => Promise<unknown>> | undefined;

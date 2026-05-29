@@ -50,6 +50,7 @@ Under the hood, ORCA layers Redis for working memory, Weaviate for semantic reca
 - [Who this is for](#who-this-is-for)
 - [What you get (and what you do not)](#what-you-get-and-what-you-do-not)
 - [Quick start](#quick-start)
+- [Configure embeddings](#configure-embeddings)
 - [Authenticate your requests](#authenticate-your-requests)
 - [Using the Memory API](#using-the-memory-api)
 - [Plug-and-play agent integration](#plug-and-play-agent-integration)
@@ -115,8 +116,7 @@ docker compose --profile app up -d --build
 
 For local Compose runs, the bundled Neo4j image requires an 8+ character password. The examples use `orca-memory`.
 
-The first build downloads and caches the default quantized embedding model in
-the app images:
+By default ORCA uses a local/private Qwen embedding model through Transformers.js:
 
 ```bash
 EMBEDDING_PROVIDER=transformers
@@ -183,6 +183,51 @@ Point the harness at `OPENAI_BASE_URL=http://127.0.0.1:4030`. The proxy recalls
 Orca memory before every chat-completion call and persists the completed
 turn after the model responds. The proxy handles OpenAI-compatible
 `/v1/chat/completions` requests in both streaming and non-streaming modes.
+
+---
+
+## Configure embeddings
+
+ORCA defaults to local/private embeddings because memory content can include
+durable project context, user preferences, tool outputs, and operational
+decisions. Use Ollama Cloud when managed embedding inference is more important
+than keeping embedding generation on the local machine.
+
+### Recommended default: local Qwen
+
+```bash
+EMBEDDING_PROVIDER=transformers
+EMBEDDING_MODEL=onnx-community/Qwen3-Embedding-0.6B-ONNX
+EMBEDDING_DTYPE=q8
+EMBEDDING_DIMENSIONS=1024
+```
+
+### Optional managed profile: Ollama Cloud
+
+```bash
+EMBEDDING_PROVIDER=ollama
+OLLAMA_HOST=https://ollama.com
+OLLAMA_API_KEY=<your-ollama-api-key>
+EMBEDDING_MODEL=qwen3-embedding:4b
+EMBEDDING_DIMENSIONS=2560
+```
+
+Use `qwen3-embedding:4b` as the practical managed default. Use
+`qwen3-embedding:8b` for quality-first deployments when latency and cost are
+acceptable. Good fallback models are `bge-m3`, `mxbai-embed-large`, and
+`embeddinggemma`.
+
+### Local Ollama
+
+```bash
+EMBEDDING_PROVIDER=ollama
+OLLAMA_HOST=http://127.0.0.1:11434
+EMBEDDING_MODEL=qwen3-embedding:4b
+EMBEDDING_DIMENSIONS=2560
+```
+
+Keep `EMBEDDING_MODEL` and `EMBEDDING_DIMENSIONS` stable after data is indexed.
+Changing embedding dimensions requires reindexing semantic memory.
 
 ---
 
@@ -527,7 +572,7 @@ docker compose --profile app up -d --build
 ```
 
 By default, the Compose app profile builds the Memory API and worker images with
-`WARM_EMBEDDING_MODEL=true`, which downloads and caches the quantized Qwen
+`WARM_EMBEDDING_MODEL=true`, which downloads and caches the local Transformers
 embedding model declared by:
 
 ```bash
@@ -538,7 +583,8 @@ EMBEDDING_DIMENSIONS=1024
 ```
 
 Set `WARM_EMBEDDING_MODEL=false` for faster local image builds, or set
-`EMBEDDING_PROVIDER=hash` for deterministic offline evaluation.
+`EMBEDDING_PROVIDER=ollama` to use local Ollama or Ollama Cloud instead of
+image-bundled Transformers embeddings.
 
 ### Simple VPS deployment
 

@@ -134,6 +134,25 @@ const preflight = async () => {
   requireValue(checks, warnings, values, "TEMPORAL_NAMESPACE");
   requireValue(checks, warnings, values, "TEMPORAL_WORKFLOW_TASK_QUEUE");
 
+  const embeddingProvider = values.get("EMBEDDING_PROVIDER")?.trim() || "transformers";
+  addCheck(
+    checks,
+    "embedding-provider",
+    ["transformers", "ollama", "hash"].includes(embeddingProvider),
+    ["transformers", "ollama", "hash"].includes(embeddingProvider)
+      ? `EMBEDDING_PROVIDER is ${embeddingProvider}.`
+      : `Unsupported EMBEDDING_PROVIDER: ${embeddingProvider}.`,
+  );
+  requireValue(checks, warnings, values, "EMBEDDING_MODEL", { allowPlaceholder: true });
+  requireValue(checks, warnings, values, "EMBEDDING_DIMENSIONS", { allowPlaceholder: true });
+  if (embeddingProvider === "ollama") {
+    requireValue(checks, warnings, values, "OLLAMA_HOST", { warnIfLocalhost: true });
+    const ollamaHost = values.get("OLLAMA_HOST")?.trim() ?? "";
+    if (/^https:\/\/ollama\.com\/?$/u.test(ollamaHost)) {
+      requireValue(checks, warnings, values, "OLLAMA_API_KEY");
+    }
+  }
+
   addCheck(
     checks,
     "auth-mode",
