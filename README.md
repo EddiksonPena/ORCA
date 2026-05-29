@@ -441,9 +441,7 @@ Data plane backends (managed by this repo via Compose manifests or externally in
 
 Operational packaging includes Prometheus scraping, Grafana dashboards, Docker Compose presets, Kubernetes references, Alertmanager stubs, plus GitHub Actions for CI, image pushes, staged deploy pipelines.
 
-![Reference architecture: Orca interface, API, control plane, data plane, execution plane, operations](https://raw.githubusercontent.com/EddiksonPena/Orca/main/docs/assets/architecture-reference.png)
-
-Editable SVG source — [`docs/assets/architecture-reference.svg`](https://github.com/EddiksonPena/Orca/blob/main/docs/assets/architecture-reference.svg).
+Reference architecture source — [`docs/assets/architecture-reference.svg`](docs/assets/architecture-reference.svg).
 
 Deeper dives: [**System overview**](docs/architecture/system-overview.md) explains flows, compaction heuristics, and subsystem boundaries beyond this diagram.
 
