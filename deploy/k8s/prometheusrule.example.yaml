@@ -1,0 +1,76 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: orca-alerts
+  namespace: orca
+spec:
+  groups:
+    - name: orca-slo-recording
+      interval: 30s
+      rules:
+        - record: orca:module_workflow_failure_rate_1h
+          expr: |
+            increase(orca_module_workflow_failed_total[1h])
+            /
+            clamp_min(increase(orca_module_workflow_scheduled_total[1h]), 1)
+        - record: orca:module_ingest_latency_ms:max_15m
+          expr: max_over_time(orca_module_average_ingest_latency_ms[15m])
+        - record: orca:module_recall_latency_ms:max_15m
+          expr: max_over_time(orca_module_average_recall_latency_ms[15m])
+    - name: orca-alerts
+      interval: 30s
+      rules:
+        - alert: OrcaTargetDown
+          expr: up{job=~"orca-memory-api|orca-worker"} == 0
+          for: 2m
+          labels:
+            severity: critical
+            service: orca
+          annotations:
+            summary: Orca target is down
+            description: '{{ $labels.job }} on {{ $labels.instance }} has been unreachable for more than 2 minutes.'
+        - alert: OrcaWorkflowFailures
+          expr: increase(orca_module_workflow_failed_total[15m]) > 0
+          for: 5m
+          labels:
+            severity: warning
+            service: orca
+          annotations:
+            summary: Orca workflow failures detected
+            description: 'Module {{ $labels.module }} on {{ $labels.service }} recorded workflow failures in the last 15 minutes.'
+        - alert: OrcaWorkflowFailureRateHigh
+          expr: orca:module_workflow_failure_rate_1h > 0.05
+          for: 10m
+          labels:
+            severity: critical
+            service: orca
+          annotations:
+            summary: Orca workflow failure rate is above SLO
+            description: 'Module {{ $labels.module }} exceeded a 5% workflow failure rate over the last hour.'
+        - alert: OrcaWorkflowBacklogHigh
+          expr: sum by (module, service) (orca_workflow_runs{status="scheduled"}) > 5
+          for: 10m
+          labels:
+            severity: warning
+            service: orca
+          annotations:
+            summary: Orca workflow backlog is building
+            description: 'Module {{ $labels.module }} has more than 5 scheduled workflow runs retained on {{ $labels.service }}.'
+        - alert: OrcaIngestLatencyHigh
+          expr: orca:module_ingest_latency_ms:max_15m > 250
+          for: 15m
+          labels:
+            severity: warning
+            service: orca
+          annotations:
+            summary: Orca ingest latency is above target
+            description: 'Module {{ $labels.module }} exceeded 250 ms average ingest latency during the last 15 minutes.'
+        - alert: OrcaRecallLatencyHigh
+          expr: orca:module_recall_latency_ms:max_15m > 200
+          for: 15m
+          labels:
+            severity: warning
+            service: orca
+          annotations:
+            summary: Orca recall latency is above target
+            description: 'Module {{ $labels.module }} exceeded 200 ms average recall latency during the last 15 minutes.'

@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@orca/auth": ["packages/auth/src/index.ts"],
+      "@orca/config": ["packages/config/src/index.ts"],
+      "@orca/harness": ["packages/harness/src/index.ts"],
+      "@orca/onboarding": ["packages/onboarding/src/index.ts"],
+      "@orca/schemas": ["packages/schemas/src/index.ts"],
+      "@orca/core": ["packages/core/src/index.ts"]
+    },
+    "lib": ["ES2022"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": ["node"]
+  }
+}

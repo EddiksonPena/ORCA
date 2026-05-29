@@ -1,0 +1,187 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: orca-default-deny
+  namespace: orca
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: orca-memory-api
+  namespace: orca
+spec:
+  podSelector:
+    matchLabels:
+      app: orca-memory-api
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 4000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: orca-redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+        - podSelector:
+            matchLabels:
+              app: orca-weaviate
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 50051
+    - to:
+        - podSelector:
+            matchLabels:
+              app: orca-neo4j
+      ports:
+        - protocol: TCP
+          port: 7687
+        - protocol: TCP
+          port: 7474
+    - to:
+        - podSelector:
+            matchLabels:
+              app: orca-temporal
+      ports:
+        - protocol: TCP
+          port: 7233
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - namespaceSelector: {}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: orca-worker
+  namespace: orca
+spec:
+  podSelector:
+    matchLabels:
+      app: orca-worker
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 4010
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: orca-redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+        - podSelector:
+            matchLabels:
+              app: orca-weaviate
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 50051
+    - to:
+        - podSelector:
+            matchLabels:
+              app: orca-neo4j
+      ports:
+        - protocol: TCP
+          port: 7687
+        - protocol: TCP
+          port: 7474
+    - to:
+        - podSelector:
+            matchLabels:
+              app: orca-temporal
+      ports:
+        - protocol: TCP
+          port: 7233
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - namespaceSelector: {}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: orca-platform-internal
+  namespace: orca
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - orca-redis
+          - orca-weaviate
+          - orca-neo4j
+          - orca-temporal
+          - orca-temporal-postgresql
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - orca-memory-api
+                  - orca-worker
+                  - orca-temporal
+                  - orca-temporal-postgresql
+                  - orca-redis
+                  - orca-weaviate
+                  - orca-neo4j
+  egress:
+    - to:
+        - podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - orca-memory-api
+                  - orca-worker
+                  - orca-temporal
+                  - orca-temporal-postgresql
+                  - orca-redis
+                  - orca-weaviate
+                  - orca-neo4j
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

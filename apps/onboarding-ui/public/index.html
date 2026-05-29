@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Orca Memory Console</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Orca navigation">
+        <a class="brand" href="#memory-graph" aria-label="Orca dashboard">
+          <span class="brand-mark"></span>
+          <span>
+            <strong>Orca</strong>
+            <small>Memory Intelligence</small>
+          </span>
+        </a>
+
+        <nav class="nav-stack">
+          <a class="nav-item active" href="#memory-graph"><span></span>Memory Space</a>
+          <a class="nav-item" href="#memory-list"><span></span>Recall Feed</a>
+          <a class="nav-item" href="#services-list"><span></span>Service Health</a>
+          <a class="nav-item" href="#snippets"><span></span>Harness Kit</a>
+        </nav>
+
+        <div class="sidebar-card">
+          <span class="status">Model Runtime</span>
+          <strong>Qwen Q8</strong>
+          <p>Local embeddings and semantic graph inspection.</p>
+        </div>
+      </aside>
+
+      <main class="shell">
+        <section class="command-bar">
+          <div class="search-shell" aria-label="Search memory console">
+            <span class="search-icon"></span>
+            <input type="search" placeholder="Search memories, modules, tags, or workflows..." />
+          </div>
+          <div class="actions">
+            <button id="refresh-button" title="Refresh status and memory graph">Refresh</button>
+            <button id="seed-button" class="secondary" title="Ingest demo memories into the API">Seed Demo</button>
+            <button id="init-button" class="secondary" title="Run bootstrap and start the app stack">Bootstrap</button>
+            <button id="down-button" class="ghost" title="Stop the Docker app stack">Stop</button>
+          </div>
+        </section>
+
+        <section class="hero-strip">
+          <div>
+            <p class="eyebrow">Orca Memory Console</p>
+            <h1>Semantic memory, rendered as a living 3D neural field.</h1>
+            <p class="hero-copy">Inspect graph health, module activity, and electric recall pathways from one focused cockpit.</p>
+          </div>
+          <div class="hero-signal" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </section>
+
+        <section class="metric-strip" aria-label="Orca memory module summary">
+          <article class="metric">
+            <span>Artifacts</span>
+            <strong id="artifact-count">0</strong>
+          </article>
+          <article class="metric">
+            <span>Chunks</span>
+            <strong id="chunk-count">0</strong>
+          </article>
+          <article class="metric">
+            <span>Graph Nodes</span>
+            <strong id="graph-node-count">0</strong>
+          </article>
+          <article class="metric">
+            <span>Graph Edges</span>
+            <strong id="graph-edge-count">0</strong>
+          </article>
+        </section>
+
+        <section class="console-grid">
+          <article class="panel graph-panel">
+            <div class="card-head">
+              <div>
+                <h2>Memory Graph</h2>
+                <p class="muted">Orbit, zoom, and follow electric memory signals across semantic space.</p>
+              </div>
+              <span id="graph-summary" class="pill">Loading</span>
+            </div>
+            <div class="graph-wrap">
+              <canvas id="memory-graph" width="860" height="560"></canvas>
+              <aside id="node-detail" class="node-detail">
+                <span class="status">Select a node</span>
+                <strong>Memory topology</strong>
+                <p>Drag to orbit, scroll to zoom, and select an electric neuron to inspect memory activity.</p>
+              </aside>
+            </div>
+          </article>
+
+          <aside class="side-rail">
+            <article class="panel">
+              <div class="card-head">
+                <h2>Services</h2>
+                <span id="services-summary" class="pill">Checking</span>
+              </div>
+              <div id="services-list" class="stack compact"></div>
+            </article>
+
+            <article class="panel">
+              <div class="card-head">
+                <h2>Modules</h2>
+                <span id="modules-summary" class="pill">Live</span>
+              </div>
+              <div id="modules-list" class="module-list"></div>
+            </article>
+          </aside>
+        </section>
+
+        <section class="grid">
+          <article class="panel">
+            <div class="card-head">
+              <h2>Prerequisites</h2>
+              <span id="checks-summary" class="pill">Checking</span>
+            </div>
+            <div id="checks-list" class="stack compact"></div>
+          </article>
+
+          <article class="panel">
+            <div class="card-head">
+              <h2>Recent Memories</h2>
+              <span id="memories-summary" class="pill">0 shown</span>
+            </div>
+            <div id="memory-list" class="memory-list"></div>
+          </article>
+        </section>
+
+        <section class="grid">
+          <article class="panel wide">
+            <div class="card-head">
+              <h2>Harness Connection</h2>
+              <span class="pill accent">Generated</span>
+            </div>
+            <p class="muted">
+              Use these snippets to plug Orca into a harness with enforced middleware, an
+              OpenAI-compatible proxy, or the MCP bridge.
+            </p>
+            <div id="snippets" class="snippet-grid"></div>
+          </article>
+
+          <article class="panel wide">
+            <div class="card-head">
+              <h2>Activity</h2>
+              <span class="pill">Live</span>
+            </div>
+            <pre id="log-output" class="log">Loading...</pre>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 768" role="img" aria-labelledby="title desc">
+  <title id="title">ORCA: Objective Relational Contextual Archive</title>
+  <desc id="desc">A deep blue underwater data city with an orca, memory graph lines, and the ORCA project name.</desc>
+  <defs>
+    <radialGradient id="surface" cx="50%" cy="0%" r="80%">
+      <stop offset="0%" stop-color="#bff7ff"/>
+      <stop offset="18%" stop-color="#159bd3"/>
+      <stop offset="48%" stop-color="#063c5f"/>
+      <stop offset="100%" stop-color="#020814"/>
+    </radialGradient>
+    <linearGradient id="cyan" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#7df9ff"/>
+      <stop offset="50%" stop-color="#0ec9ff"/>
+      <stop offset="100%" stop-color="#0075ff"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="0%" x2="100%">
+      <stop offset="0%" stop-color="#050b14"/>
+      <stop offset="60%" stop-color="#071a28"/>
+      <stop offset="100%" stop-color="#01040a"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1536" height="768" fill="url(#surface)"/>
+  <rect width="1536" height="768" fill="#020814" opacity=".24"/>
+
+  <g opacity=".38" stroke="#83f7ff" stroke-width="1.5" fill="none">
+    <path d="M36 202 184 133 318 231 464 162 620 246 781 118 967 215 1139 143 1304 233 1494 156"/>
+    <path d="M80 458 244 389 392 472 562 404 760 498 943 382 1112 467 1289 370 1480 442"/>
+    <path d="M184 133 244 389M318 231 392 472M620 246 760 498M967 215 943 382M1139 143 1112 467M1304 233 1289 370"/>
+  </g>
+  <g fill="#8ef9ff" filter="url(#glow)">
+    <circle cx="36" cy="202" r="4"/>
+    <circle cx="184" cy="133" r="5"/>
+    <circle cx="318" cy="231" r="4"/>
+    <circle cx="464" cy="162" r="4"/>
+    <circle cx="620" cy="246" r="5"/>
+    <circle cx="781" cy="118" r="4"/>
+    <circle cx="967" cy="215" r="5"/>
+    <circle cx="1139" cy="143" r="4"/>
+    <circle cx="1304" cy="233" r="5"/>
+    <circle cx="1494" cy="156" r="4"/>
+    <circle cx="244" cy="389" r="4"/>
+    <circle cx="392" cy="472" r="5"/>
+    <circle cx="760" cy="498" r="5"/>
+    <circle cx="1112" cy="467" r="4"/>
+    <circle cx="1289" cy="370" r="5"/>
+  </g>
+
+  <g opacity=".42" fill="none" stroke="url(#cyan)" stroke-width="2">
+    <ellipse cx="408" cy="405" rx="284" ry="86"/>
+    <ellipse cx="408" cy="405" rx="232" ry="62"/>
+    <ellipse cx="408" cy="405" rx="178" ry="43"/>
+    <path d="M107 558c236-85 456-102 653-52 233 59 440 41 664-66"/>
+    <path d="M67 612c282-106 537-124 774-55 212 61 391 50 610-50"/>
+  </g>
+
+  <g transform="translate(812 85)" opacity=".9">
+    <path d="M226 0 420 77v476H21V77z" fill="#03111f" opacity=".76"/>
+    <path d="M226 0 420 77v476H21V77z" fill="none" stroke="#16d7ff" stroke-width="2"/>
+    <path d="M80 553V211l73-55 58 43 57-106 77 118v342" fill="none" stroke="#31e9ff" stroke-width="3" opacity=".7"/>
+    <path d="M144 553V288h160v265M206 553V371h36v182" fill="none" stroke="#77f8ff" stroke-width="2" opacity=".7"/>
+    <path d="M90 122h270M76 184h298M56 250h338M45 322h360M34 392h381M26 467h396" stroke="#0ea8d9" stroke-width="1" opacity=".45"/>
+  </g>
+
+  <g transform="translate(168 263)">
+    <path d="M486 141c-55-104-226-164-357-94C35 97 0 191 22 263c25 80 119 117 225 103 113-15 205-83 239-161 44 4 82-7 121-35-40-8-78-17-121-29z" fill="url(#dark)" stroke="#7df9ff" stroke-width="3"/>
+    <path d="M92 105c71-55 176-62 276-6-83 4-158 28-220 83-37 33-63 72-77 112-31-27-37-121 21-189z" fill="#f7fdff" opacity=".9"/>
+    <path d="M234 31c19-68 58-93 101-96-21 52-19 101 9 147-44-24-82-40-110-51zM331 363c29 43 67 66 113 69-40 36-94 45-162 24 25-24 41-55 49-93z" fill="#020814" stroke="#57e8ff" stroke-width="2"/>
+    <path d="M164 100c72-29 155-20 250 30M76 223c80-18 171-13 272 16M139 315c98 0 184-26 257-78" fill="none" stroke="#00d8ff" stroke-width="2" opacity=".72"/>
+    <circle cx="112" cy="121" r="8" fill="#78f8ff" filter="url(#glow)"/>
+    <path d="M53 166c25-7 53-5 84 5" stroke="#7df9ff" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(910 302)" filter="url(#glow)">
+    <text x="0" y="0" fill="#c7fbff" font-family="Arial, Helvetica, sans-serif" font-size="92" letter-spacing="18">ORCA</text>
+    <text x="8" y="44" fill="#d8fbff" font-family="Arial, Helvetica, sans-serif" font-size="23">Objective Relational Contextual Archive</text>
+  </g>
+
+  <g transform="translate(58 600)" fill="none" stroke="#55e7ff" opacity=".75">
+    <rect x="0" y="0" width="306" height="108" rx="10" fill="#02101d" opacity=".7"/>
+    <path d="M30 73h246M30 36h82m24 0h140M30 54h160m24 0h62"/>
+    <text x="28" y="27" fill="#bdf9ff" stroke="none" font-family="Arial, Helvetica, sans-serif" font-size="16">MEMORY API</text>
+    <text x="28" y="94" fill="#7eefff" stroke="none" font-family="Arial, Helvetica, sans-serif" font-size="14">recall / ingest / feedback / compact</text>
+  </g>
+
+  <g transform="translate(1150 585)" fill="none" stroke="#55e7ff" opacity=".75">
+    <rect x="0" y="0" width="310" height="114" rx="10" fill="#02101d" opacity=".7"/>
+    <text x="26" y="30" fill="#bdf9ff" stroke="none" font-family="Arial, Helvetica, sans-serif" font-size="16">HARNESS AGNOSTIC</text>
+    <text x="26" y="62" fill="#7eefff" stroke="none" font-family="Arial, Helvetica, sans-serif" font-size="14">proxy / MCP / hooks / skills / CLI</text>
+    <path d="M26 82h258"/>
+  </g>
+</svg>

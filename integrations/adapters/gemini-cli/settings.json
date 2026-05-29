@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "orca": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "../../mcp-server",
+        "python",
+        "server.py"
+      ],
+      "transport": "stdio",
+      "timeout": 30
+    }
+  }
+}

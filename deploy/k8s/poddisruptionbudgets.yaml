@@ -1,0 +1,32 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: orca-memory-api
+  namespace: orca
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: orca-memory-api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: orca-worker
+  namespace: orca
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: orca-worker
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: orca-temporal
+  namespace: orca
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: orca-temporal

@@ -1,0 +1,37 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: orca
+  namespace: orca
+spec:
+  route:
+    receiver: orca-default
+    groupBy:
+      - alertname
+      - severity
+      - service
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 4h
+    routes:
+      - receiver: orca-critical
+        matchers:
+          - name: severity
+            value: critical
+      - receiver: orca-warning
+        matchers:
+          - name: severity
+            value: warning
+  receivers:
+    - name: orca-default
+      webhookConfigs:
+        - url: https://alerts.example.com/orca/default
+          sendResolved: true
+    - name: orca-warning
+      webhookConfigs:
+        - url: https://alerts.example.com/orca/warning
+          sendResolved: true
+    - name: orca-critical
+      webhookConfigs:
+        - url: https://alerts.example.com/orca/critical
+          sendResolved: true

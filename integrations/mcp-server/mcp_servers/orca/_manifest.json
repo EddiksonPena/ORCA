@@ -1,0 +1,158 @@
+{
+  "server": "orca",
+  "transport": "stdio",
+  "command": "uv",
+  "args": [
+    "run",
+    "--directory",
+    "/home/eddiksonpena/projects/orca-mcp-server",
+    "python",
+    "server.py"
+  ],
+  "tools": [
+    {
+      "name": "orca_health",
+      "description": "Check if Orca is reachable and healthy. Returns service status, artifact counts, and graph stats.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      }
+    },
+    {
+      "name": "orca_remember",
+      "description": "Store a fact, decision, discovery, or correction in Orca memory.\n\nscope \u2014 one of: 'user-profile', 'project:<name>', 'skill:<name>', 'workspace', 'session:<id>'\ncontent \u2014 the fact or discovery to remember\nsource \u2014 what produced this memory (default: hermes-agent)\ntags \u2014 optional list of categorical tags for filtering later\n\nReturns the memoryId and which stores it was persisted to (working, semantic, graph).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "scope": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "source": {
+            "default": "hermes-agent",
+            "type": "string"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "scope",
+          "content"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "orca_recall",
+      "description": "Semantically search Orca memory for anything matching a natural-language query.\n\nquery \u2014 what you're looking for, in plain English (e.g. 'user design preferences' or 'how was the last deploy done?')\nscope \u2014 optional filter to a specific scope (user-profile, project:name, workspace, etc.)\n\nReturns ranked context items with confidence scores, provenance, and salience metadata.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "orca_compact",
+      "description": "Compact a conversation window into durable episodic, semantic, and procedural memory.\n\nsession_id \u2014 a unique identifier for this session\nmessages \u2014 list of {\"role\": \"user\"|\"assistant\", \"content\": \"...\"} pairs from the conversation\nscope \u2014 memory scope, defaults to 'workspace'\n\nReturns whether compaction triggered, a working summary, any open loops, and which memories were promoted.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "session_id": {
+            "type": "string"
+          },
+          "messages": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "scope": {
+            "default": "workspace",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id",
+          "messages"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "orca_feedback",
+      "description": "Reinforce or demote a memory. Useful memories get higher salience and rank higher in future recalls.\n\nartifact_id \u2014 the memory ID from a recall or remember response\nuseful \u2014 true to reinforce this memory, false to demote it",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "type": "string"
+          },
+          "useful": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "useful"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "orca_list",
+      "description": "List all memories stored in Orca, optionally filtered by scope.\n\nscope \u2014 optional filter: 'user-profile', 'project:<name>', 'skill:<name>', 'workspace', etc.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "scope": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "type": "object"
+      }
+    }
+  ],
+  "generated_at": "2026-04-29T02:32:17.503434+00:00"
+}

@@ -1,0 +1,10 @@
+node_modules
+.pnpm-store
+.git
+.DS_Store
+dist
+data
+.venv-graphiti
+coverage
+tmp
+*.log

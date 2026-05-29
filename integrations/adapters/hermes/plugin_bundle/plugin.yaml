@@ -1,0 +1,12 @@
+name: orca
+version: 1.0.0
+description: "Orca memory OS — full conversation capture, tool tracing, and semantic recall for Hermes Agent."
+author: Eddikson Peña
+kind: memory
+depends_on: []
+hooks:
+  - pre_llm_call
+  - post_tool_call
+  - post_llm_call
+  - on_session_start
+  - on_session_end

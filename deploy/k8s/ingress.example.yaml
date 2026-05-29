@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: orca-memory-api
+  namespace: orca
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - orca.example.com
+      secretName: orca-tls
+  rules:
+    - host: orca.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: orca-memory-api
+                port:
+                  number: 4000

@@ -1,0 +1,121 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: orca-redis-backup
+  namespace: orca
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: redis-backup
+              image: redis:7-alpine
+              command:
+                - /bin/sh
+                - -lc
+                - redis-cli -h redis BGSAVE && echo "Ship /data/dump.rdb to object storage with your backup sidecar or CSI snapshot workflow."
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: orca-temporal-postgres-backup
+  namespace: orca
+spec:
+  schedule: "30 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: postgres-backup
+              image: postgres:16-alpine
+              env:
+                - name: PGHOST
+                  value: temporal-postgresql
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: orca-platform-secrets
+                      key: temporal-postgres-user
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: orca-platform-secrets
+                      key: temporal-postgres-password
+                - name: PGDATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: orca-platform-secrets
+                      key: temporal-postgres-db
+              command:
+                - /bin/sh
+                - -lc
+                - pg_dump --format=custom --file=/tmp/temporal.dump "$PGDATABASE" && echo "Ship /tmp/temporal.dump to object storage from this job."
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: orca-neo4j-backup
+  namespace: orca
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: neo4j-backup
+              image: neo4j:5
+              env:
+                - name: NEO4J_USERNAME
+                  value: neo4j
+                - name: NEO4J_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: orca-platform-secrets
+                      key: neo4j-password
+              command:
+                - /bin/sh
+                - -lc
+                - echo "Run neo4j-admin database dump when using an image and storage layout aligned with your Neo4j edition. Ship resulting dump to object storage."
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: orca-weaviate-backup
+  namespace: orca
+spec:
+  schedule: "0 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: weaviate-backup
+              image: curlimages/curl:8.12.1
+              command:
+                - /bin/sh
+                - -lc
+                - echo "Call the Weaviate backup API here once your backup backend is configured."
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi

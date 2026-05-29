@@ -1,0 +1,33 @@
+{
+  "name": "orca",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "orca:connect": "node scripts/bootstrap.mjs connect",
+    "orca:cli": "node scripts/orca-cli.mjs",
+    "orca:doctor": "node scripts/bootstrap.mjs doctor",
+    "orca:init": "node scripts/bootstrap.mjs init",
+    "orca:load": "node scripts/production-readiness.mjs load",
+    "orca:preflight": "node scripts/production-readiness.mjs preflight",
+    "orca:proxy": "pnpm --filter @orca/proxy start",
+    "orca:sandbox-smoke": "node scripts/sandbox-smoke.mjs",
+    "orca:smoke": "node scripts/production-readiness.mjs smoke",
+    "orca:ui": "node scripts/bootstrap.mjs ui",
+    "orca:warm-embeddings": "node scripts/warm-embedding-model.mjs",
+    "dev": "pnpm --parallel --filter @orca/memory-api --filter @orca/worker dev",
+    "start:memory-api": "pnpm --filter @orca/memory-api start",
+    "start:proxy": "pnpm --filter @orca/proxy start",
+    "start:worker": "pnpm --filter @orca/worker start",
+    "lint": "pnpm -r lint",
+    "test": "tsx --test \"packages/*/src/**/*.test.ts\"",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "@huggingface/transformers": "^3.8.0",
+    "@types/node": "^24.8.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

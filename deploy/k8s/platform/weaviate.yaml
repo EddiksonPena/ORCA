@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: weaviate
+  namespace: orca
+spec:
+  selector:
+    app: orca-weaviate
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+    - name: grpc
+      port: 50051
+      targetPort: 50051
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: orca-weaviate
+  namespace: orca
+spec:
+  serviceName: weaviate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orca-weaviate
+  template:
+    metadata:
+      labels:
+        app: orca-weaviate
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: weaviate
+          image: semitechnologies/weaviate:1.31.2
+          ports:
+            - containerPort: 8080
+            - containerPort: 50051
+          env:
+            - name: QUERY_DEFAULTS_LIMIT
+              value: "20"
+            - name: AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
+              value: "false"
+            - name: PERSISTENCE_DATA_PATH
+              value: /var/lib/weaviate
+            - name: DEFAULT_VECTORIZER_MODULE
+              value: "none"
+            - name: ENABLE_MODULES
+              value: ""
+            - name: CLUSTER_HOSTNAME
+              value: node1
+          volumeMounts:
+            - name: weaviate-data
+              mountPath: /var/lib/weaviate
+          readinessProbe:
+            httpGet:
+              path: /v1/.well-known/ready
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /v1/.well-known/ready
+              port: 8080
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: weaviate-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 50Gi

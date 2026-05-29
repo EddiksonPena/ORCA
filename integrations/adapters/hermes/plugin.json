@@ -1,0 +1,73 @@
+{
+  "name": "orca-memory-system",
+  "version": "1.0.0",
+  "plugin_version": "1",
+  "description": "Multi-modal memory OS for Hermes \u2014 semantic search, graph entities, episodic memory, session auto-compaction, code-execution MCP routing, and feedback-driven reinforcement. Installs the Orca skill, MCP server, typed wrappers, and lifecycle hooks in one command.",
+  "author": {
+    "name": "Eddikson Pe\u00f1a"
+  },
+  "license": "MIT",
+  "hermes_version": ">=2.0.0",
+  "depends_on": [],
+  "skills": [
+    {
+      "path": "skills/orca-memory",
+      "category": "mlops"
+    }
+  ],
+  "mcp_servers": {
+    "orca": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "../../mcp-server",
+        "python",
+        "server.py"
+      ],
+      "transport": "stdio",
+      "timeout": 30
+    }
+  },
+  "code_wrappers": {
+    "generator": "scripts/generate_mcp_wrappers.py",
+    "output_dir": "mcp_servers/",
+    "generate_on_install": true
+  },
+  "hooks": {
+    "session_start": {
+      "script": "hooks/orca_bootstrap.py",
+      "description": "Guard + bootstrap: validate Orca API health, verify MCP tools are wired, force-discovery warning if not. Recall user profile + project conventions. Inject into system prompt."
+    },
+    "post_tool_call": {
+      "script": "hooks/tool_capture.py",
+      "matcher": "*",
+      "description": "Capture ALL tool calls to Orca as episodic memories. Filter large MCP recall results before they hit context."
+    },
+    "context_pressure": {
+      "script": "hooks/auto_compact.py",
+      "threshold": 0.7,
+      "description": "When context occupancy exceeds 70%, auto-compact working memory to Orca and return a working summary."
+    },
+    "session_end": {
+      "script": "hooks/orca_persist.py",
+      "description": "Compact full session into durable episodic/semantic/procedural memory. Send feedback on all recalls. Save open loops for next session."
+    }
+  },
+  "orca": {
+    "scopes": {
+      "read": [
+        "user-profile",
+        "project:*",
+        "plugin:*",
+        "workspace"
+      ],
+      "write": [
+        "workspace",
+        "plugin:orca-memory-system"
+      ]
+    },
+    "auto_recall_on_start": true,
+    "auto_compact_on_end": true
+  }
+}

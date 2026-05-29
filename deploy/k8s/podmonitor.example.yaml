@@ -1,0 +1,41 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: orca-memory-api
+  namespace: orca
+spec:
+  selector:
+    matchLabels:
+      app: orca-memory-api
+  namespaceSelector:
+    matchNames:
+      - orca
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      honorLabels: true
+      bearerTokenSecret:
+        name: orca-secrets
+        key: api-key
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: orca-worker
+  namespace: orca
+spec:
+  selector:
+    matchLabels:
+      app: orca-worker
+  namespaceSelector:
+    matchNames:
+      - orca
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      honorLabels: true
+      bearerTokenSecret:
+        name: orca-secrets
+        key: api-key
