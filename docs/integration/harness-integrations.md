@@ -19,7 +19,7 @@ pnpm orca:cli -- wipe --scope project:demo
 ```
 
 The install command emits `AGENT_INSTALL.md`, `INSTALL_PROMPT.md`,
-`ADAPTER_NOTES.md`, `RULE.md`, `package.json`, npm detection/smoke scripts,
+`ADAPTER_NOTES.md`, `RULE.md`, `package.json`, npm detection/verification scripts,
 `lifecycle-contract.json`, `hooks.abstract.json`, MCP config, a skill, a CLI
 shim, and `pipeline.json`. Point the target coding agent at the destination
 folder and ask it to run `npm install`, `npm run orca:detect`, then merge only

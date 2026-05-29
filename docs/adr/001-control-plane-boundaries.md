@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted for MVP planning.
+Accepted.
 
 ## Context
 
@@ -32,14 +32,14 @@ The Memory API will depend on the control plane, not on store-specific logic.
 - additional coordination complexity between control and data layers
 - more interfaces and internal contracts to define early
 
-## Implications For MVP
+## Implementation Notes
 
 - define store adapters early
 - keep schemas canonical and store-agnostic
 - treat cross-store links as first-class identifiers
 - model background jobs as control-plane responsibilities
 
-## Follow-Up ADRs
+## Related Decisions
 
 - ADR 002: Canonical memory schema
 - ADR 003: Scope hierarchy and access boundaries

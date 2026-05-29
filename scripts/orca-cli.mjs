@@ -209,11 +209,11 @@ Install every component from this activation bundle:
    - post-response: ingest completed turn
    - session end/stop: compact and persist summary
 
-After installation, run a smoke check:
+After installation, verify the activation bundle:
 
 \`\`\`bash
 pnpm orca:cli -- install ${target} --enforce
-pnpm orca:sandbox-smoke -- --skip-build --load-requests 3
+npm run orca:verify
 \`\`\`
 
 Report exactly which files were merged and which lifecycle events are supported by the current harness.
@@ -254,7 +254,7 @@ const packageJson = (target) => json({
   description: "Harness-agnostic Orca activation bundle for coding-agent self-installation.",
   scripts: {
     "orca:detect": "node scripts/detect-harness.mjs",
-    "orca:smoke": "node scripts/smoke-install.mjs",
+    "orca:verify": "node scripts/verify-install.mjs",
     "orca:hook": "node hooks/orca-hook.mjs",
   },
   engines: {
@@ -276,7 +276,7 @@ const activationManifest = (target, env) => json({
   entrypoints: {
     instructions: "AGENT_INSTALL.md",
     detection: "npm run orca:detect",
-    smoke: "npm run orca:smoke",
+    verification: "npm run orca:verify",
     hook: "npm run orca:hook",
   },
   installOrder: [
@@ -288,7 +288,7 @@ const activationManifest = (target, env) => json({
     "Install skills/orca-memory/SKILL.md if the harness supports skill discovery.",
     "Add cli/orca-memory.sh to PATH or tool registry if CLI tools are supported.",
     "Route model calls through ORCA_PROXY_URL when the harness supports OpenAI-compatible base URLs.",
-    "Run npm run orca:smoke and report installed surfaces plus unsupported surfaces.",
+    "Run npm run orca:verify and report installed surfaces plus unsupported surfaces.",
   ],
 });
 
@@ -335,7 +335,7 @@ HARNESS_ROOT=/absolute/path/to/target/repo npm run orca:detect
 10. Run:
 
 \`\`\`bash
-npm run orca:smoke
+npm run orca:verify
 \`\`\`
 
 11. Report:
@@ -469,7 +469,7 @@ const result = {
 console.log(JSON.stringify(result, null, 2));
 `;
 
-const smokeInstallScript = `#!/usr/bin/env node
+const verifyInstallScript = `#!/usr/bin/env node
 
 import { existsSync } from "node:fs";
 
@@ -874,7 +874,7 @@ const install = async () => {
     "pipeline.json": json(pipelineManifest(target)),
     "hooks/orca-hook.mjs": hookScript,
     "scripts/detect-harness.mjs": detectHarnessScript,
-    "scripts/smoke-install.mjs": smokeInstallScript,
+    "scripts/verify-install.mjs": verifyInstallScript,
     "skills/orca-memory/SKILL.md": skillMarkdown,
     "cli/orca-memory.sh": cliShim,
     [`${target}.env`]: files[`${target}.env`],

@@ -44,7 +44,7 @@ Restore outline:
 2. Restore the Redis volume or import the snapshot into a replacement Redis pod.
 3. Verify that `orca:state:v1` exists.
 4. Scale the app layer back up.
-5. Run a recall smoke test and verify `/health` on both services.
+5. Run a recall verification and verify `/health` on both services.
 
 ## Temporal PostgreSQL
 
@@ -82,7 +82,7 @@ Restore outline:
 
 1. Restore the Weaviate data volume or backup API snapshot.
 2. Wait for `/v1/.well-known/ready`.
-3. Run a recall smoke test on a known semantic memory.
+3. Run a recall verification on a known semantic memory.
 4. If needed, trigger `POST /workflows/reindex` to rebuild dependent derived state.
 
 ## Neo4j
@@ -114,14 +114,14 @@ If you need a full stack restore:
 4. Restore `Neo4j`.
 5. Bring up `Temporal`.
 6. Bring up `memory-api` and `worker`.
-7. Run smoke tests:
+7. Run verification checks:
    - `GET /health`
    - `GET /metrics`
    - authenticated `POST /v1/memories/recall`
    - `GET /workflows/definitions`
 8. If any store-specific derived state appears stale, run `POST /workflows/reindex`.
 
-## Smoke Test Checklist
+## Verification Checklist
 
 After restore, verify:
 

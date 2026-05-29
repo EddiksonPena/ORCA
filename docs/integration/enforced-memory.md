@@ -134,13 +134,13 @@ pnpm orca:cli -- install factory-droid --enforce
 Each target bundle is written under `generated/harness/<target>/` by default, or
 directly into the folder passed to `--destination`. For agent self-install,
 point the coding agent at the destination folder and ask it to run `npm install`,
-`npm run orca:detect`, and `npm run orca:smoke`. Bundles include:
+`npm run orca:detect`, and `npm run orca:verify`. Bundles include:
 
 - `AGENT_INSTALL.md` for harness-agnostic self-install instructions.
 - `INSTALL_PROMPT.md` for asking the target agent to merge the bundle into its own config surface.
 - `ADAPTER_NOTES.md` for target-specific installation guidance and fallback order.
 - `RULE.md` for the harness governing rule file.
-- `package.json`, `scripts/detect-harness.mjs`, and `scripts/smoke-install.mjs` for npm-compatible setup, runtime detection, and smoke checks.
+- `package.json`, `scripts/detect-harness.mjs`, and `scripts/verify-install.mjs` for npm-compatible setup, runtime detection, and installation verification.
 - `lifecycle-contract.json`, `hooks.abstract.json`, and `hooks/orca-hook.mjs` for lifecycle recall, ingest, and compaction.
 - `hooks.codex.example.json` as an example adapter for Codex-style command hooks.
 - `skills/orca-memory/SKILL.md` for skill-capable harnesses.

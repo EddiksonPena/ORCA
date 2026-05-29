@@ -47,12 +47,14 @@ export interface AppConfig {
   temporalExecutionMode: "auto" | "local" | "temporal";
   autoTriggerWorkflows: boolean;
   otelExporterEndpoint: string | undefined;
-  embeddingProvider: "hash" | "transformers";
+  embeddingProvider: "hash" | "transformers" | "ollama";
   embeddingModel: string;
   embeddingDtype: "fp32" | "fp16" | "q8" | "int8" | "uint8";
   embeddingDimensions: number;
   embeddingQueryInstruction: string;
   embeddingCacheDir: string;
+  ollamaHost: string;
+  ollamaApiKey: string | undefined;
   rerankerModel: string;
   extractionModel: string;
   temporalGraphBackend: "neo4j-temporal" | "graphiti-python" | "graphiti-scaffold";
@@ -149,7 +151,12 @@ export const loadConfig = (
           : "auto",
     autoTriggerWorkflows: parseBoolean(env.AUTO_TRIGGER_WORKFLOWS, true),
     otelExporterEndpoint: env.OTEL_EXPORTER_OTLP_ENDPOINT,
-    embeddingProvider: env.EMBEDDING_PROVIDER === "hash" ? "hash" : "transformers",
+    embeddingProvider:
+      env.EMBEDDING_PROVIDER === "hash"
+        ? "hash"
+        : env.EMBEDDING_PROVIDER === "ollama"
+          ? "ollama"
+          : "transformers",
     embeddingModel: env.EMBEDDING_MODEL ?? "onnx-community/Qwen3-Embedding-0.6B-ONNX",
     embeddingDtype:
       env.EMBEDDING_DTYPE === "fp32"
@@ -166,6 +173,8 @@ export const loadConfig = (
       env.EMBEDDING_QUERY_INSTRUCTION ??
       "Given an agent memory recall query, retrieve relevant memories that answer or contextualize the query",
     embeddingCacheDir: resolvePath(baseDir, env.EMBEDDING_CACHE_DIR ?? "./data/models/transformers"),
+    ollamaHost: (env.OLLAMA_HOST ?? "http://127.0.0.1:11434").replace(/\/$/u, ""),
+    ollamaApiKey: env.OLLAMA_API_KEY?.trim() || undefined,
     rerankerModel: env.RERANKER_MODEL ?? "bge-reranker-base",
     extractionModel: env.EXTRACTION_MODEL ?? "qwen2.5:14b",
     temporalGraphBackend:

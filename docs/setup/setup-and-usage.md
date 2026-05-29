@@ -22,9 +22,10 @@ To prefetch the default product embedding model outside Docker, run:
 pnpm orca:warm-embeddings
 ```
 
-The default embedding runtime is `onnx-community/Qwen3-Embedding-0.6B-ONNX` with
-`EMBEDDING_DTYPE=q8`. Docker Compose warms this model during app image builds
-unless `WARM_EMBEDDING_MODEL=false` is set.
+The default embedding runtime is local/private:
+`onnx-community/Qwen3-Embedding-0.6B-ONNX` with `EMBEDDING_DTYPE=q8`. Docker
+Compose warms this model during app image builds unless
+`WARM_EMBEDDING_MODEL=false` is set.
 
 ## Configure
 
@@ -46,6 +47,21 @@ Defaults are designed for local development:
 - Weaviate: `127.0.0.1:8080`
 - Neo4j HTTP: `127.0.0.1:7474`
 - Neo4j Bolt: `127.0.0.1:7687`
+
+### Optional Ollama Cloud embeddings
+
+Use Ollama Cloud when you prefer managed embedding inference:
+
+```bash
+EMBEDDING_PROVIDER=ollama
+OLLAMA_HOST=https://ollama.com
+OLLAMA_API_KEY=<your-ollama-api-key>
+EMBEDDING_MODEL=qwen3-embedding:4b
+EMBEDDING_DIMENSIONS=2560
+```
+
+Use `qwen3-embedding:8b` for quality-first deployments when latency and cost are
+acceptable. Keep the model and dimensions stable after indexing memory.
 
 ## Start Infrastructure
 
@@ -92,8 +108,9 @@ docker compose --profile app up -d --build
 ```
 
 The app image build warms `onnx-community/Qwen3-Embedding-0.6B-ONNX` with
-`EMBEDDING_DTYPE=q8` by default. Set `WARM_EMBEDDING_MODEL=false` when you want
-faster rebuilds during local iteration.
+`EMBEDDING_DTYPE=q8` by default. Set `WARM_EMBEDDING_MODEL=false` to skip
+Transformers model warmup, or set `EMBEDDING_PROVIDER=ollama` to use local
+Ollama or Ollama Cloud.
 
 ## Ingest
 
