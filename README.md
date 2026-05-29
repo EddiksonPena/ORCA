@@ -33,6 +33,7 @@ Under the hood, ORCA layers Redis for working memory, Weaviate for semantic reca
 
 | Goal | Recommended path |
 |------|------------------|
+| Install ORCA in one command | `curl -fsSL https://raw.githubusercontent.com/EddiksonPena/ORCA/main/install.sh \| sh` |
 | Run ORCA locally | `pnpm install`, configure `.env`, then start Compose plus the API/worker |
 | Run the full app stack | `docker compose --profile app up -d --build` |
 | Add ORCA to an agent harness | `pnpm orca:cli -- install universal --enforce --destination ./orca-agent-install` |
@@ -103,10 +104,24 @@ See [Build, package, deploy](#build-package-deploy) for deployment options.
 
 Requirements: **Node.js 22+**, **pnpm**, **Docker Desktop** (or Compose-compatible engine).
 
-### Option A — Fully containerized app stack
+### Option A — One-command install
 
-This path keeps the API, worker, data stores, and Qwen embedding runtime inside
-Docker. It is the recommended path for evaluating the complete ORCA service.
+This is the simplest path for users and coding agents installing ORCA into a
+fresh destination:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/EddiksonPena/ORCA/main/install.sh | sh
+```
+
+The installer clones ORCA, creates `.env`, generates an API key when needed,
+starts the full Docker Compose app profile, and prints the harness activation
+command.
+
+### Option B — Fully containerized app stack
+
+This path keeps the API, worker, proxy, UI, data stores, and Qwen embedding
+runtime inside Docker. It is the recommended manual path for evaluating the
+complete ORCA service.
 
 ```bash
 cp .env.production.example .env
@@ -128,9 +143,9 @@ EMBEDDING_DIMENSIONS=1024
 Use `WARM_EMBEDDING_MODEL=false docker compose --profile app up -d --build`
 when you want to skip image-time embedding model warmup.
 
-### Option B — One-shot bootstrap
+### Option C — One-shot bootstrap
 
-Requires only Node (no prior `pnpm install`):
+Requires only Node and pnpm:
 
 ```bash
 node scripts/bootstrap.mjs init
@@ -138,7 +153,7 @@ node scripts/bootstrap.mjs init
 
 This creates `.env` when missing, installs dependencies, starts the requested services, verifies health endpoints, and can emit a harness activation bundle.
 
-### Option C — Manual host services
+### Option D — Manual host services
 
 This path runs Redis, Weaviate, Neo4j, and Temporal in Docker, then runs the
 Node API and worker on the host.
@@ -226,8 +241,8 @@ EMBEDDING_MODEL=qwen3-embedding:4b
 EMBEDDING_DIMENSIONS=2560
 ```
 
-Keep `EMBEDDING_MODEL` and `EMBEDDING_DIMENSIONS` stable after data is indexed.
-Changing embedding dimensions requires reindexing semantic memory.
+Keep the embedding model and dimensions stable after indexing memory. Changing
+either requires reindexing semantic memory.
 
 ---
 
@@ -564,6 +579,9 @@ docker push ghcr.io/<owner>/orca-worker:<tag>
 docker push ghcr.io/<owner>/orca-proxy:<tag>
 ```
 
+For the complete release flow, including npm packages, GHCR images, installer
+usage, and tag-driven releases, see the [distribution guide](docs/deployment/distribution.md).
+
 ### Compose “app profile”
 
 ```bash
@@ -611,7 +629,7 @@ kubectl apply -f deploy/k8s/worker-deployment.yaml
 
 **Stacked demo** (`deploy/k8s/platform`) folds in Compose-adjacent data dependencies for evaluation clusters—still **reference-grade**, not a compliance-ready production bundle.
 
-Staging / production rollout guidance: [**Production readiness playbook**](docs/deployment/production-readiness.md), [**Backup & restore**](docs/deployment/backup-and-restore.md), **[Distributed deployment considerations](docs/deployment/distributed-open-source-deployment.md)**.
+Staging / production rollout guidance: [**Distribution guide**](docs/deployment/distribution.md), [**Production readiness playbook**](docs/deployment/production-readiness.md), [**Backup & restore**](docs/deployment/backup-and-restore.md), **[Distributed deployment considerations](docs/deployment/distributed-open-source-deployment.md)**.
 
 ---
 
@@ -682,6 +700,7 @@ Responsible disclosure guidelines live in **`SECURITY.md`**.
 - [**Enforced memory integration**](docs/integration/enforced-memory.md)
 - [**Setup & day-two usage**](docs/setup/setup-and-usage.md)
 - [**System overview & heuristics**](docs/architecture/system-overview.md)
+- [**Distribution guide**](docs/deployment/distribution.md)
 - [**Production readiness checklist**](docs/deployment/production-readiness.md)
 - [**Distributed deployment nuances**](docs/deployment/distributed-open-source-deployment.md)
 - [**Kubernetes reference README**](deploy/k8s/README.md)

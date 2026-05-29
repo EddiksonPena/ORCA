@@ -1,11 +1,38 @@
 {
   "name": "@orca/schemas",
   "version": "0.1.0",
-  "private": true,
+  "description": "Shared ORCA memory API schemas, validation helpers, and TypeScript contracts.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/index.d.ts",
+    "dist/index.d.ts.map",
+    "dist/index.js",
+    "dist/index.js.map"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EddiksonPena/ORCA.git",
+    "directory": "packages/schemas"
+  },
+  "keywords": [
+    "agent-memory",
+    "ai-agents",
+    "schemas",
+    "typescript",
+    "orca"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch",

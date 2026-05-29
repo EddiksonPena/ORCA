@@ -1,16 +1,43 @@
 {
   "name": "@orca/harness",
   "version": "0.1.0",
-  "private": true,
+  "description": "Harness-agnostic ORCA memory client and every-prompt middleware for agentic coding systems.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/index.d.ts",
+    "dist/index.d.ts.map",
+    "dist/index.js",
+    "dist/index.js.map"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EddiksonPena/ORCA.git",
+    "directory": "packages/harness"
+  },
+  "keywords": [
+    "agent-memory",
+    "ai-agents",
+    "coding-agent",
+    "mcp",
+    "orca"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "pnpm --filter @orca/schemas build && tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch",
-    "lint": "tsc -p tsconfig.json --noEmit",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "lint": "pnpm --filter @orca/schemas build && tsc -p tsconfig.json --noEmit",
+    "typecheck": "pnpm --filter @orca/schemas build && tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@orca/schemas": "workspace:*"
