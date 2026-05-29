@@ -438,7 +438,9 @@ Data plane backends (managed by this repo via Compose manifests or externally in
 
 Operational packaging includes Prometheus scraping, Grafana dashboards, Docker Compose presets, Kubernetes references, Alertmanager stubs, and deployment verification commands.
 
-Reference architecture — [`docs/assets/architecture.png`](docs/assets/architecture.png).
+<p align="center">
+  <img src="docs/assets/architecture.png" alt="ORCA reference architecture" width="100%" />
+</p>
 
 Deeper dives: [**System overview**](docs/architecture/system-overview.md) explains flows, compaction heuristics, and subsystem boundaries beyond this diagram.
 
