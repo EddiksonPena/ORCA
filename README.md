@@ -1,7 +1,7 @@
 # ORCA
 
 <p align="center">
-  <img src="docs/assets/orca-cover.svg" alt="ORCA: Objective Relational Contextual Archive" width="100%" />
+  <img src="docs/assets/orca-cover.png" alt="ORCA: Objective Relational Contextual Archive" width="100%" />
 </p>
 
 <p align="center">
